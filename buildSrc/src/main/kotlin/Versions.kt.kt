@@ -1,0 +1,16 @@
+object Versions {
+    const val gradlePlugin = "4.2.1"
+    const val kotlin = "1.5.0"
+    const val timber = "5.0.1"
+    const val appCompat = "1.6.1"
+    const val material = "1.9.0"
+    const val constraintLayout = "2.1.4"
+    const val jUnit = "4.13.2"
+    const val androidXCore = "1.10.1"
+    const val viewModel = "2.6.1"
+    const val activity = "1.7.2"
+    const val retrofit = "2.9.0"
+    const val converterScalars = "2.9.0"
+    const val androidXTestExt = "1.1.5"
+    const val espressoCore = "3.5.1"
+}
