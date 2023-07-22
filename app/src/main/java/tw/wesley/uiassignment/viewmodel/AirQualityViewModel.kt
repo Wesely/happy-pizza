@@ -17,7 +17,9 @@ class AirQualityViewModel @Inject constructor(
     // TODO: This is just a POC, remove it later in task #3
     fun printAirQualityInLog() {
         viewModelScope.launch {
-            Timber.d(airQualityApiService.getAirQualityData().string())
+            Timber.d(airQualityApiService.getAirQualityData().records
+                .joinToString(separator = "\n") { "${it.county}-${it.siteName}: ${it.status}" }
+            )
         }
     }
 }
