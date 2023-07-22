@@ -1,8 +1,8 @@
 package tw.wesley.uiassignment.network
 
-import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Query
+import tw.wesley.uiassignment.models.AirDataResponse
 
 
 /**
@@ -20,5 +20,5 @@ interface AirQualityApiService {
         @Query("api_key") apiKey: String = "cebebe84-e17d-4022-a28f-81097fda5896",
         @Query("sort") sort: String = "ImportDate desc",
         @Query("format") format: String = "json"
-    ): ResponseBody // TODO: change to data object in https://github.com/Wesely/happy-pizza/issues/3
+    ): AirDataResponse
 }

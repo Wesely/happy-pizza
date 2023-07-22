@@ -14,10 +14,12 @@ class AirQualityViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    // TODO: This is just a POC, remove it later in task #3
+    // TODO: This is just a POC, remove it later
     fun printAirQualityInLog() {
         viewModelScope.launch {
-            Timber.d(airQualityApiService.getAirQualityData().string())
+            Timber.d(airQualityApiService.getAirQualityData().records
+                .joinToString(separator = "\n") { "${it.county}-${it.siteName}: ${it.status}" }
+            )
         }
     }
 }
