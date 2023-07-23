@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch {
-            viewModel.printAirQualityInLog()
+            viewModel.fetchAirData()
         }
     }
 }

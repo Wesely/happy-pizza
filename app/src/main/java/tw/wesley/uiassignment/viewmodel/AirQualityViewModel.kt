@@ -4,22 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import tw.wesley.uiassignment.network.AirQualityApiService
+import tw.wesley.uiassignment.repo.AirDataRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class AirQualityViewModel @Inject constructor(
-    private val airQualityApiService: AirQualityApiService
+    private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
-
-    // TODO: This is just a POC, remove it later
-    fun printAirQualityInLog() {
+    fun fetchAirData() {
         viewModelScope.launch {
-            Timber.d(airQualityApiService.getAirQualityData().records
-                .joinToString(separator = "\n") { "${it.county}-${it.siteName}: ${it.status}" }
-            )
+            airDataRepository.fetchAndStoreAirQualityData()
         }
     }
 }
