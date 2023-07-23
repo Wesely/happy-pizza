@@ -1,4 +1,4 @@
-package tw.wesley.uiassignment.models
+package tw.wesley.uiassignment.data.remote
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

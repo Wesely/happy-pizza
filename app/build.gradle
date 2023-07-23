@@ -49,16 +49,21 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
 
-    // Retrofit 
+    // Retrofit for http request
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
 
-    // Hilt
+    // Hilt for dependency injection
     implementation "com.google.dagger:hilt-android:2.44"
     kapt "com.google.dagger:hilt-compiler:2.44"
 
-    // Moshi for parsing JSON
+    // Moshi for parsing JSON to object
     implementation "com.squareup.moshi:moshi-kotlin:1.14.0"
+
+    // Room for database
+    implementation "androidx.room:room-runtime:2.5.2"
+    implementation "androidx.room:room-ktx:2.5.2"
+    kapt "androidx.room:room-compiler:2.5.2"
 }
 
 // Allow references to generated code

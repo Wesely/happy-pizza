@@ -2,7 +2,7 @@ package tw.wesley.uiassignment.network
 
 import retrofit2.http.GET
 import retrofit2.http.Query
-import tw.wesley.uiassignment.models.AirDataResponse
+import tw.wesley.uiassignment.data.remote.AirDataResponse
 
 
 /**
