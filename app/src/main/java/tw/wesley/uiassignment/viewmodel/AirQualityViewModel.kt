@@ -12,8 +12,6 @@ class AirQualityViewModel @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
-
-    // TODO: This is just a POC, remove it later
     fun fetchAirData() {
         viewModelScope.launch {
             airDataRepository.fetchAndStoreAirQualityData()
