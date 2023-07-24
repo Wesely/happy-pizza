@@ -21,19 +21,12 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.fetchAirData()
-
         }
-        lifecycleScope.launch {
-            viewModel.horizontalAirDataFlow.collect { data ->
-                Timber.d("collect/horizontal/${data.map { "${it.county}-${it.pm25}" }}")
-            }
+        viewModel.verticalAirLiveData.observe(this) { data ->
+            Timber.d("collect/vertical/${data.map { "${it.county}-${it.pm25}" }}")
         }
-        lifecycleScope.launch {
-            viewModel.verticalAirDataFlow.collect { data ->
-                Timber.d("collect/vertical/${data.map { "${it.county}-${it.pm25}" }}")
-            }
+        viewModel.horizontalAirLiveData.observe(this) { data ->
+            Timber.d("collect/horizontal/${data.map { "${it.county}-${it.pm25}" }}")
         }
-
-
     }
 }
