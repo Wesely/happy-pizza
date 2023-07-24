@@ -13,12 +13,15 @@ object AirDataRecordMapper {
             siteId = remoteAirDataRecord.siteId,
             siteName = remoteAirDataRecord.siteName,
             county = remoteAirDataRecord.county,
-            pm25 = remoteAirDataRecord.pm25,
+            pm25 = remoteAirDataRecord.pm25.toInt(),
             status = remoteAirDataRecord.status
         )
     }
 
     fun toEntityList(remoteAirDataRecords: List<RemoteAirDataRecord>): List<AirData> {
-        return remoteAirDataRecords.map { toLocalAirData(it) }
+        return remoteAirDataRecords.filter {
+            // We don't have logic to handle invalid PM2.5 records, filter them out here to make sure our PM2.5 are all valid numbers
+            it.pm25.isNotEmpty() && it.pm25.matches("\\d+".toRegex())
+        }.map { toLocalAirData(it) }
     }
 }

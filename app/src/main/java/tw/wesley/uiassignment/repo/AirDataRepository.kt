@@ -15,4 +15,6 @@ class AirDataRepository @Inject constructor(
         Timber.d("dataFromApi/${response.joinToString(separator = "\n") { "${it.county}-${it.siteName}: ${it.status}" }}")
         airDataRecordDao.insertAll(AirDataRecordMapper.toEntityList(response))
     }
+
+    suspend fun getListAirDataFlow() = airDataRecordDao.getAllRecordsAsFlow()
 }
