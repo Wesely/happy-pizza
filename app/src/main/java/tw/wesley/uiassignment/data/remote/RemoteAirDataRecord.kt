@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class AirDataRecord(
+data class RemoteAirDataRecord(
     @Json(name = "siteid") val siteId: String,
     @Json(name = "sitename") val siteName: String,
     @Json(name = "county") val county: String,

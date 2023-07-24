@@ -1,20 +1,24 @@
 package tw.wesley.uiassignment.data.mappers
 
-import tw.wesley.uiassignment.data.entities.AirDataRecordEntity
-import tw.wesley.uiassignment.data.remote.AirDataRecord
+import tw.wesley.uiassignment.data.local.AirData
+import tw.wesley.uiassignment.data.remote.RemoteAirDataRecord
 
+/**
+ * We cannot change the data format/type of the remote data,
+ * this mapper convert remote format [RemoteAirDataRecord] to our local format [AirData]
+ */
 object AirDataRecordMapper {
-    fun toEntity(airDataRecord: AirDataRecord): AirDataRecordEntity {
-        return AirDataRecordEntity(
-            siteId = airDataRecord.siteId ?: "",
-            siteName = airDataRecord.siteName,
-            county = airDataRecord.county,
-            pm25 = airDataRecord.pm25,
-            status = airDataRecord.status
+    private fun toLocalAirData(remoteAirDataRecord: RemoteAirDataRecord): AirData {
+        return AirData(
+            siteId = remoteAirDataRecord.siteId,
+            siteName = remoteAirDataRecord.siteName,
+            county = remoteAirDataRecord.county,
+            pm25 = remoteAirDataRecord.pm25,
+            status = remoteAirDataRecord.status
         )
     }
 
-    fun toEntityList(airDataRecords: List<AirDataRecord>): List<AirDataRecordEntity> {
-        return airDataRecords.map { toEntity(it) }
+    fun toEntityList(remoteAirDataRecords: List<RemoteAirDataRecord>): List<AirData> {
+        return remoteAirDataRecords.map { toLocalAirData(it) }
     }
 }
