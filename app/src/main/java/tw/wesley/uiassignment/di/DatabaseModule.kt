@@ -7,7 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import tw.wesley.uiassignment.data.daos.AirDataRecordDao
+import tw.wesley.uiassignment.data.database.AirDataRecordDao
 import tw.wesley.uiassignment.data.database.AppDatabase
 import javax.inject.Singleton
 
