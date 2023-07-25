@@ -35,6 +35,10 @@ android {
         jvmTarget = "17"
     }
 
+    viewBinding {
+        enabled = true
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }

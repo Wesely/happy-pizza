@@ -28,7 +28,6 @@ class AirQualityViewModelTest {
 
     private lateinit var viewModel: AirQualityViewModel
     private val airDataRepository = mockk<AirDataRepository>()
-    private val airDataObserver: Observer<List<AirData>> = mockk(relaxed = true)
 
     private val horizontalAirDataObserver: Observer<List<AirData>> = mockk(relaxed = true)
     private val verticalAirDataObserver: Observer<List<AirData>> = mockk(relaxed = true)
