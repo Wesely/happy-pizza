@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="halfLine"
+            app:layout_constraintTop_toTopOf="@id/halfLine"
             tools:text="花草樹" />
 
         <TextView

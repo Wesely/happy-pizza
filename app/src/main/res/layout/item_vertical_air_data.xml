@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/tvSiteId"
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="24dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_l"
@@ -57,13 +57,12 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_l"
             android:ellipsize="end"
             android:gravity="end"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@id/tvSiteName"
+            app:layout_constraintEnd_toStartOf="@+id/icArrow"
             app:layout_constraintTop_toTopOf="@id/tvSiteName"
-            app:layout_constraintEnd_toEndOf="parent"
             tools:text="垂直對齊古亭 25" />
 
         <TextView
@@ -71,15 +70,24 @@
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_l"
             android:ellipsize="end"
-            android:maxLines="1"
             android:gravity="end"
+            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@+id/tvCounty"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/icArrow"
             app:layout_constraintStart_toStartOf="@+id/horizontalHalfLine"
             app:layout_constraintTop_toTopOf="@+id/tvCounty"
             tools:text="垂直對齊台北市" />
+
+        <ImageView
+            android:id="@+id/icArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_arrow_right"
+            android:padding="@dimen/margin_m"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
