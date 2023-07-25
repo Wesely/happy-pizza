@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">UI-Assignment</string>
+    <string name="app_name">空氣汙染</string>
+    <string name="home_title">空氣汙染</string>
+    <string name="home_item_toast">%s的空氣不良好</string>
+    <string name="status_good_quality">The status is good, we want to go out to have fun</string>
+    <string name="search_hint">請輸入「站名」</string>
+    <string name="search_empty_description">輸入「站名」\n查詢該地區空汙資訊</string>
+    <string name="search_not_found">找不到「%s」\n相關的空汙資訊</string>
 </resources>
