@@ -3,36 +3,83 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/vertical_air_data_h"
-    android:layout_margin="@dimen/margin_m">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_s">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/margin_m">
 
+        <TextView
+            android:id="@+id/tvSiteId"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_l"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <TextView
+            android:id="@+id/tvSiteName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_m"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_constraintStart_toEndOf="@id/tvSiteId"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="古亭" />
+
+        <TextView
+            android:id="@+id/tvCounty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_m"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintStart_toEndOf="@id/tvSiteId"
+            app:layout_constraintTop_toBottomOf="@id/tvSiteName"
+            tools:text="台北市" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/halfLine"
+            android:id="@+id/horizontalHalfLine"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
+        <TextView
+            android:id="@+id/tvPM25"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_l"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:maxLines="1"
+            app:layout_constraintBottom_toBottomOf="@id/tvSiteName"
+            app:layout_constraintTop_toTopOf="@id/tvSiteName"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="垂直對齊古亭 25" />
 
         <TextView
             android:id="@+id/tvStatus"
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:maxLines="1"
+            android:layout_marginEnd="@dimen/margin_l"
             android:ellipsize="end"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:maxLines="1"
+            android:gravity="end"
+            app:layout_constraintBottom_toBottomOf="@+id/tvCounty"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@id/halfLine"
-            tools:text="@string/status_good_quality" />
+            app:layout_constraintStart_toStartOf="@+id/horizontalHalfLine"
+            app:layout_constraintTop_toTopOf="@+id/tvCounty"
+            tools:text="垂直對齊台北市" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/horizontal_air_data_w"
-    android:layout_height="@dimen/horizontal_air_data_h">
+    android:layout_height="@dimen/horizontal_air_data_h"
+    android:layout_margin="@dimen/margin_s">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
