@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import tw.wesley.uiassignment.data.local.AirData
 import tw.wesley.uiassignment.repo.AirDataRepository
 import javax.inject.Inject
@@ -38,6 +39,7 @@ class AirQualityViewModel @Inject constructor(
         viewModelScope.launch {
             // collectLatest would discard and we start processing the new one.
             airDataRepository.getListAirDataFlow().collectLatest { list ->
+                Timber.d("getListAirDataFlow/dataSize=${list.size}}")
                 // Sort and split the list based on PM2.5 value
                 list.sortedBy { it.pm25 }.apply {
                     // Determine which air data goes to which LiveData based on PM2.5 value
