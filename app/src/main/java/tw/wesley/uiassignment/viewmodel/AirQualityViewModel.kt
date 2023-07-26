@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tw.wesley.uiassignment.data.local.AirData
+import tw.wesley.uiassignment.data.local.AirData.Companion.INVALID_INT
+import tw.wesley.uiassignment.extensions.median
 import tw.wesley.uiassignment.repo.AirDataRepository
 import javax.inject.Inject
 
@@ -26,6 +28,8 @@ class AirQualityViewModel @Inject constructor(
     private val _verticalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
     val verticalAirLiveData: LiveData<List<AirData>> = _verticalAirLiveData
 
+    private var qualityThreshold = 30
+
     // This function is called when we want to refresh the air data
     fun fetchAirData() {
         // It runs in a coroutine to avoid blocking the main thread
@@ -40,17 +44,20 @@ class AirQualityViewModel @Inject constructor(
             // collectLatest would discard and we start processing the new one.
             airDataRepository.getListAirDataFlow().collectLatest { list ->
                 Timber.d("getListAirDataFlow/dataSize=${list.size}}")
+
+                // find the median from the list, original order unchanged
+                qualityThreshold = list.map { it.pm25 }.filter { it != INVALID_INT }.median() ?: 0
+
                 // Sort and split the list based on PM2.5 value
                 list.sortedBy { it.pm25 }.apply {
                     // Determine which air data goes to which LiveData based on PM2.5 value
-                    if (list.none { it.pm25 >= 30 }) {
-                        // If all PM2.5 values are below 30, the first five items go to horizontalAirLiveData, the rest to verticalAirLiveData
+                    if (qualityThreshold == 0) {
+                        // If all PM2.5 values are 0, the first few items go to horizontalAirLiveData, the rest to verticalAirLiveData
                         _horizontalAirLiveData.value = take(MIN_HORIZONTAL_ITEMS)
                         _verticalAirLiveData.value = drop(MIN_HORIZONTAL_ITEMS)
                     } else {
-                        // If there are items with PM2.5 value above 30, they are sent to verticalAirLiveData, the rest to horizontalAirLiveData
-                        _horizontalAirLiveData.value = filter { it.pm25 <= 30 }
-                        _verticalAirLiveData.value = filter { it.pm25 > 30 }
+                        _horizontalAirLiveData.value = filter { it.pm25 <= qualityThreshold }
+                        _verticalAirLiveData.value = filter { it.pm25 > qualityThreshold }
                     }
                 }
             }

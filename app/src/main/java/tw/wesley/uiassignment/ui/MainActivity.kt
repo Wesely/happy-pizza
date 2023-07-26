@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -27,20 +28,29 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
+        binding = ActivityMainBinding.inflate(layoutInflater).apply {
+            setContentView(root)
+            setSupportActionBar(toolbar)
+        }
 
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setTitle(R.string.home_title)
 
+        // Ask to start getting the data
         lifecycleScope.launch {
             viewModel.fetchAirData()
         }
+
         viewModel.verticalAirLiveData.observe(this) { data ->
             // only print on debug build
             Timber.d("collect/vertical/dataSize=${data.size}")
+            binding.verticalRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                adapter = VerticalAirDataAdapter(data) {
+                    // Example: 沙鹿的空氣不良好
+                    Toast.makeText(context, getString(R.string.home_item_toast, it.siteName), Toast.LENGTH_SHORT).show()
+                }
+            }
 
         }
         viewModel.horizontalAirLiveData.observe(this) { data ->
