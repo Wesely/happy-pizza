@@ -20,6 +20,7 @@ class AirQualityViewModel @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
+
     // MutableLiveData is a LiveData whose value can be changed.
     // _horizontalAirLiveData is private so the UI cannot change its value.
     private val _horizontalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
@@ -28,15 +29,12 @@ class AirQualityViewModel @Inject constructor(
     private val _verticalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
     val verticalAirLiveData: LiveData<List<AirData>> = _verticalAirLiveData
 
-    private var qualityThreshold = 30
+    val isSearching = MutableLiveData(false)
 
-    // This function is called when we want to refresh the air data
-    fun fetchAirData() {
-        // It runs in a coroutine to avoid blocking the main thread
-        viewModelScope.launch {
-            airDataRepository.fetchAndStoreAirQualityData()
-        }
-    }
+    private val _searchResultLiveData = MutableLiveData<List<AirData>>(emptyList())
+    val searchResultLiveData: LiveData<List<AirData>> = _searchResultLiveData
+
+    private var qualityThreshold = 30
 
     init {
         // Here we start collecting the Flow from our repository when viewModel is live
@@ -63,6 +61,35 @@ class AirQualityViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * This function is called when we want to refresh the air data.
+     * It should ask repo to fetch latest data and write to DB.
+     * We collect the DB as a flow when it's change in the init{} already.
+     */
+    fun fetchAirData() {
+        // It runs in a coroutine to avoid blocking the main thread
+        viewModelScope.launch {
+            airDataRepository.fetchAndStoreAirQualityData()
+        }
+    }
+
+    /**
+     * Set the isSearching mode
+     */
+    fun activateSearching(activate: Boolean) {
+        isSearching.value = activate
+    }
+
+    fun queryAirData(keyword: String?) {
+        if (keyword.isNullOrBlank()) {
+            return
+        }
+        viewModelScope.launch {
+            _searchResultLiveData.value = airDataRepository.queryAirData(keyword)
+        }
+    }
+
 
     companion object {
         // A constant that represents the minimum number of items we want to display in the horizontal recycler view

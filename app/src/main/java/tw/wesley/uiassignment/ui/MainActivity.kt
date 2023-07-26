@@ -11,6 +11,7 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
         viewModel.horizontalAirLiveData.observe(this) { data ->
             // only print on debug build
             Timber.d("collect/horizontal/dataSize=${data.size}")
@@ -63,6 +65,14 @@ class MainActivity : AppCompatActivity() {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 adapter = HorizontalAirDataAdapter(data)
             }
+        }
+
+        viewModel.isSearching.observe(this) { isSearching ->
+            binding.centerSearchHint.isVisible = isSearching
+        }
+
+        viewModel.searchResultLiveData.observe(this) {
+            Timber.d("collect/searchresult/${it.map { it.siteName }}")
         }
     }
 
@@ -96,14 +106,21 @@ class MainActivity : AppCompatActivity() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     Timber.d("onQueryTextSubmit/$query")
+                    viewModel.queryAirData(query)
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     Timber.d("onQueryTextChange/$newText")
+                    viewModel.queryAirData(newText)
                     return true
                 }
             })
+
+            setOnCloseListener {
+                viewModel.activateSearching(false)
+                true
+            }
 
         }
 
@@ -113,6 +130,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_item_search -> {
             // User chose the "Search" item
+            viewModel.activateSearching(true)
             true
         }
 
