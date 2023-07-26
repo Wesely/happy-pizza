@@ -9,6 +9,7 @@ import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -38,12 +39,18 @@ class MainActivity : AppCompatActivity() {
             viewModel.fetchAirData()
         }
         viewModel.verticalAirLiveData.observe(this) { data ->
-            Timber.d("collect/vertical/${data.map { "${it.county}-${it.pm25}" }}")
+            // only print on debug build
+            Timber.d("collect/vertical/dataSize=${data.size}")
+
         }
         viewModel.horizontalAirLiveData.observe(this) { data ->
-            Timber.d("collect/horizontal/${data.map { "${it.county}-${it.pm25}" }}")
+            // only print on debug build
+            Timber.d("collect/horizontal/dataSize=${data.size}")
+            binding.horizontalRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = HorizontalAirDataAdapter(data)
+            }
         }
-
     }
 
     // https://developer.android.com/develop/ui/views/search/training/setup

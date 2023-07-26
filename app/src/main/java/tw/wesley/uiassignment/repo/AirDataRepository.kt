@@ -12,9 +12,9 @@ class AirDataRepository @Inject constructor(
 ) {
     suspend fun fetchAndStoreAirQualityData() {
         val response = apiService.getAirQualityData().records
-        Timber.d("dataFromApi/${response.joinToString(separator = "\n") { "${it.county}-${it.siteName}: ${it.status}" }}")
+        Timber.d("dataFromApi/totalSiteCounts=${response.size}")
         airDataRecordDao.insertAll(AirDataRecordMapper.toEntityList(response))
     }
 
-    suspend fun getListAirDataFlow() = airDataRecordDao.getAllRecordsAsFlow()
+    fun getListAirDataFlow() = airDataRecordDao.getAllRecordsAsFlow()
 }
