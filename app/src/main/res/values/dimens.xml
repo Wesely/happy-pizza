@@ -8,7 +8,7 @@
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="text_size_medium">16sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
-    <dimen name="horizontal_air_data_w">160dp</dimen>
+    <dimen name="horizontal_air_data_w">180dp</dimen>
     <dimen name="horizontal_air_data_h">88dp</dimen>
     <dimen name="vertical_air_data_h">60dp</dimen>
 

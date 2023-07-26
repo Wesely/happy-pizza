@@ -61,7 +61,8 @@
             android:gravity="end"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@id/tvSiteName"
-            app:layout_constraintEnd_toStartOf="@+id/icArrow"
+            app:layout_constraintEnd_toStartOf="@+id/ivArrow"
+            app:layout_constraintStart_toStartOf="@+id/horizontalHalfLine"
             app:layout_constraintTop_toTopOf="@id/tvSiteName"
             tools:text="垂直對齊古亭 25" />
 
@@ -74,17 +75,17 @@
             android:gravity="end"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@+id/tvCounty"
-            app:layout_constraintEnd_toStartOf="@+id/icArrow"
+            app:layout_constraintEnd_toStartOf="@+id/ivArrow"
             app:layout_constraintStart_toStartOf="@+id/horizontalHalfLine"
             app:layout_constraintTop_toTopOf="@+id/tvCounty"
             tools:text="垂直對齊台北市" />
 
         <ImageView
-            android:id="@+id/icArrow"
+            android:id="@+id/ivArrow"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:src="@drawable/ic_arrow_right"
             android:padding="@dimen/margin_m"
+            android:src="@drawable/ic_arrow_right"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

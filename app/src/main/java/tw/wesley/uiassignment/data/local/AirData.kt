@@ -11,4 +11,8 @@ data class AirData(
     @ColumnInfo(name = "county") val county: String,
     @ColumnInfo(name = "pm2_5") val pm25: Int,
     @ColumnInfo(name = "status") val status: String
-)
+) {
+    companion object {
+        const val INVALID_INT = Int.MAX_VALUE
+    }
+}
