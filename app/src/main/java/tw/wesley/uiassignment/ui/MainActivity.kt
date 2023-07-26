@@ -1,10 +1,12 @@
 package tw.wesley.uiassignment.ui
 
+import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -22,6 +24,7 @@ import tw.wesley.uiassignment.viewmodel.AirQualityViewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    lateinit var searchView: SearchView
 
     // Use this delegate to auto create/destroy on correct lifecycle
     private val viewModel: AirQualityViewModel by viewModels()
@@ -29,8 +32,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
-            setContentView(root)
             setSupportActionBar(toolbar)
+            setContentView(root)
         }
 
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -69,8 +72,39 @@ class MainActivity : AppCompatActivity() {
 
         // Associate searchable configuration with the SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        (menu.findItem(R.id.menu_item_search).actionView as SearchView).apply {
+        searchView = (menu.findItem(R.id.menu_item_search).actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            queryHint = getString(R.string.search_hint)
+            isIconified = true
+            isIconifiedByDefault = false
+            onActionViewExpanded()
+
+
+            val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            // Show/Hide softKeyboard based on the focus state.
+            setOnQueryTextFocusChangeListener { v, hasFocus ->
+                Timber.d("setOnQueryTextFocusChangeListener/$hasFocus")
+                if (hasFocus) {
+                    // flag = InputMethodManager.IMPLICIT won't work
+                    inputMethodManager.showSoftInput(v, 0)
+                } else {
+                    // flag = InputMethodManager.IMPLICIT won't work
+                    inputMethodManager.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+            }
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    Timber.d("onQueryTextSubmit/$query")
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    Timber.d("onQueryTextChange/$newText")
+                    return true
+                }
+            })
+
         }
 
         return true

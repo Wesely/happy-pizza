@@ -4,6 +4,12 @@
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/sky_blue</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorAccent">@color/sky_blue</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="editTextColor">@color/white</item>
+        <item name="android:editTextColor">@color/white</item>
+        <item name="textFillColor">@color/white</item>
+
     </style>
 
     <style name="Theme.UIAssignment" parent="Base.Theme.UIAssignment" />
