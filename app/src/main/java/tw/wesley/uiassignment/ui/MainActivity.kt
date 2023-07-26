@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.verticalAirLiveData.observe(this) { data ->
             // only print on debug build
             Timber.d("collect/vertical/dataSize=${data.size}")
+            binding.verticalRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                adapter = VerticalAirDataAdapter(data)
+            }
 
         }
         viewModel.horizontalAirLiveData.observe(this) { data ->
