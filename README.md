@@ -1,15 +1,18 @@
 ## Setup
 <img width="1089" alt="image" src="https://github.com/Wesely/happy-pizza/assets/5109822/8b1dfba8-6d03-467b-894f-6ce69498e958">
 
-設定中的 Gradle 需把 Java 版本設為 17
+- 設定中的 Gradle 需把 Java 版本設為 17
 
 ## Brief
+- Use `Hilt` to inject the dependencies
 - Use `Retrofit` to fetch the JSON data
 - Use `Moshi` to convert to our dataObject(Remote)
 - Map dataObject(Remote) to local format (convert PM2.5 to integer)
 - Store the datas in `Room` Database
 - Query data as a `flow`
 - wrap all data, status in a `UiState` class
+- Use `mockito` to write a sample UnitTest to make sure our data flow is not broken
+- Use `Timber` to print log only on debug build
 
 
 ## Download Debug(Unsigned) APK
