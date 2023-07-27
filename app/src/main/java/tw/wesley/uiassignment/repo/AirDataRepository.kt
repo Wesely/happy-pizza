@@ -17,4 +17,6 @@ class AirDataRepository @Inject constructor(
     }
 
     fun getListAirDataFlow() = airDataRecordDao.getAllRecordsAsFlow()
+
+    suspend fun queryAirData(keyword: String) = airDataRecordDao.queryAirData(keyword)
 }

@@ -1,16 +1,20 @@
 package tw.wesley.uiassignment
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,8 +34,7 @@ class AirQualityViewModelTest {
     private lateinit var viewModel: AirQualityViewModel
     private val airDataRepository = mockk<AirDataRepository>()
 
-    private val horizontalAirDataObserver: Observer<List<AirData>> = mockk(relaxed = true)
-    private val verticalAirDataObserver: Observer<List<AirData>> = mockk(relaxed = true)
+    private val testScope = TestScope()
 
     @Before
     fun setup() {
@@ -49,9 +52,11 @@ class AirQualityViewModelTest {
 
         // 使用fake的Repo來創立ViewModel
         viewModel = AirQualityViewModel(airDataRepository)
-        // 在這個VM上觀察在意的 LiveData
-        viewModel.horizontalAirLiveData.observeForever(horizontalAirDataObserver)
-        viewModel.verticalAirLiveData.observeForever(verticalAirDataObserver)
+    }
+
+    @After
+    fun tearDown() {
+        testScope.cancel()
     }
 
     /**
@@ -60,13 +65,24 @@ class AirQualityViewModelTest {
      */
     @Test
     fun fetchAirData_ShouldUpdateLiveData() = runTest {
+        var uiState: AirQualityViewModel.UiState? = null
+        val job = launch { // launch a new coroutine to collect from the flow
+            viewModel.uiState.collect { uiState = it }
+        }
+
         viewModel.fetchAirData()
 
-        // 確認呼叫 fetchAirData 的時候會呼叫到 etListAirDataFlow()
-        verify { airDataRepository.getListAirDataFlow() }
+        // verify fetchAirData calls to getListAirDataFlow()
+        coVerify { airDataRepository.getListAirDataFlow() }
 
-        // 確認 LiveData 有被更新 exactly 1 次 (不要呼叫一次就重複更新多次 也不要呼叫了卻沒更新)
-        verify(exactly = 1) { horizontalAirDataObserver.onChanged(any()) }
-        verify(exactly = 1) { verticalAirDataObserver.onChanged(any()) }
+        // small delay to wait for flow emit
+        delay(500)
+
+        // verify it's collected
+        assert(uiState?.horizontalAirDataList?.isNotEmpty() ?: false)
+        assert(uiState?.verticalAirDataList?.isNotEmpty() ?: false)
+
+        job.cancel() // cancel the collect
     }
+
 }

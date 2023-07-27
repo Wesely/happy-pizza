@@ -22,4 +22,13 @@ interface AirDataRecordDao {
 
     @Delete
     suspend fun delete(record: AirData)
+
+
+    /**
+     * @param keyword 對 site_name, county 進行部分匹配搜尋
+     * 使用 '%' 允許部分匹配，例: 南，可以匹配 台南、南化
+     * 使用 || 做Query字串傳接，例: 輸入 "南" 則串接成 "%南%"
+     */
+    @Query("SELECT * FROM air_data_records WHERE site_name LIKE '%' || :keyword || '%' OR county LIKE '%' || :keyword || '%'")
+    suspend fun queryAirData(keyword: String): List<AirData>
 }

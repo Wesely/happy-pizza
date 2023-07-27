@@ -1,10 +1,10 @@
 package tw.wesley.uiassignment.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,23 +20,22 @@ class AirQualityViewModel @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
-    // MutableLiveData is a LiveData whose value can be changed.
-    // _horizontalAirLiveData is private so the UI cannot change its value.
-    private val _horizontalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
-    val horizontalAirLiveData: LiveData<List<AirData>> = _horizontalAirLiveData
+    /**
+     * Use a UiState to manage the behave of several data with the Searching mode.
+     * On each update, we can copy this UiState and only modify the part we want.
+     */
+    data class UiState(
+        var isSearching: Boolean = false,
+        var searchingKeyword: String = "",
+        var horizontalAirDataList: List<AirData> = emptyList(),
+        var verticalAirDataList: List<AirData> = emptyList(),
+        var searchResultAirDataList: List<AirData> = emptyList(),
+    )
 
-    private val _verticalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
-    val verticalAirLiveData: LiveData<List<AirData>> = _verticalAirLiveData
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     private var qualityThreshold = 30
-
-    // This function is called when we want to refresh the air data
-    fun fetchAirData() {
-        // It runs in a coroutine to avoid blocking the main thread
-        viewModelScope.launch {
-            airDataRepository.fetchAndStoreAirQualityData()
-        }
-    }
 
     init {
         // Here we start collecting the Flow from our repository when viewModel is live
@@ -53,14 +52,49 @@ class AirQualityViewModel @Inject constructor(
                     // Determine which air data goes to which LiveData based on PM2.5 value
                     if (qualityThreshold == 0) {
                         // If all PM2.5 values are 0, the first few items go to horizontalAirLiveData, the rest to verticalAirLiveData
-                        _horizontalAirLiveData.value = take(MIN_HORIZONTAL_ITEMS)
-                        _verticalAirLiveData.value = drop(MIN_HORIZONTAL_ITEMS)
+                        _uiState.value = _uiState.value.copy(
+                            horizontalAirDataList = take(MIN_HORIZONTAL_ITEMS),
+                            verticalAirDataList = drop(MIN_HORIZONTAL_ITEMS)
+                        )
                     } else {
-                        _horizontalAirLiveData.value = filter { it.pm25 <= qualityThreshold }
-                        _verticalAirLiveData.value = filter { it.pm25 > qualityThreshold }
+                        _uiState.value = _uiState.value.copy(
+                            horizontalAirDataList = filter { it.pm25 <= qualityThreshold },
+                            verticalAirDataList = filter { it.pm25 > qualityThreshold }
+                        )
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * This function is called when we want to refresh the air data.
+     * It should ask repo to fetch latest data and write to DB.
+     * We collect the DB as a flow when it's change in the init{} already.
+     */
+    fun fetchAirData() {
+        // It runs in a coroutine to avoid blocking the main thread
+        viewModelScope.launch {
+            airDataRepository.fetchAndStoreAirQualityData()
+        }
+    }
+
+    /**
+     * Set the isSearching mode
+     */
+    fun activateSearching(activate: Boolean) {
+        _uiState.value = _uiState.value.copy(isSearching = activate)
+    }
+
+    fun queryAirData(keyword: String?) {
+        if (keyword == null) {
+            return
+        }
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                searchResultAirDataList = airDataRepository.queryAirData(keyword),
+                searchingKeyword = keyword
+            )
         }
     }
 
