@@ -3,9 +3,12 @@ package tw.wesley.uiassignment.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tw.wesley.uiassignment.data.local.AirData
@@ -14,6 +17,7 @@ import tw.wesley.uiassignment.extensions.median
 import tw.wesley.uiassignment.repo.AirDataRepository
 import javax.inject.Inject
 
+@FlowPreview
 @HiltViewModel
 class AirQualityViewModel @Inject constructor(
     // Dependency injection to get the repository
@@ -34,6 +38,9 @@ class AirQualityViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState
+
+    // As SearchText.onChange might variate fast, use this flow to debounce
+    private val _queryFlow = MutableStateFlow("")
 
     private var qualityThreshold = 30
 
@@ -65,6 +72,28 @@ class AirQualityViewModel @Inject constructor(
                 }
             }
         }
+
+        // wait for 0.5 sec before user finish their typing
+        viewModelScope.launch {
+            _queryFlow
+                .debounce(500)  // debounce for 500 milliseconds
+                .distinctUntilChanged()  // only proceed if the query is different from the last one
+                .collect { query ->
+                    if (query.isBlank()) {
+                        // send an empty searching uiState
+                        _uiState.value = _uiState.value.copy(
+                            searchResultAirDataList = emptyList(),
+                            searchingKeyword = query
+                        )
+                    } else {
+                        // send search result uiState
+                        _uiState.value = _uiState.value.copy(
+                            searchResultAirDataList = airDataRepository.queryAirData(query),
+                            searchingKeyword = query
+                        )
+                    }
+                }
+        }
     }
 
     /**
@@ -87,15 +116,8 @@ class AirQualityViewModel @Inject constructor(
     }
 
     fun queryAirData(keyword: String?) {
-        if (keyword == null) {
-            return
-        }
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                searchResultAirDataList = airDataRepository.queryAirData(keyword),
-                searchingKeyword = keyword
-            )
-        }
+        // send the latest keyword to flow
+        _queryFlow.value = keyword ?: ""
     }
 
     companion object {
