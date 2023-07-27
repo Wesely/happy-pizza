@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tw.wesley.uiassignment.data.local.AirData
@@ -74,14 +73,25 @@ class AirQualityViewModel @Inject constructor(
             }
         }
 
-        // wait for 1 sec before user finish their typing
+        // wait for 0.5 sec before user finish their typing
         viewModelScope.launch {
             _queryFlow
-                .debounce(1000L)  // debounce for 500 milliseconds
-                .filter { it.isNotBlank() }  // filter blank input
+                .debounce(500)  // debounce for 500 milliseconds
                 .distinctUntilChanged()  // only proceed if the query is different from the last one
                 .collect { query ->
-                    queryAirData(query)
+                    if (query.isBlank()) {
+                        // send an empty searching uiState
+                        _uiState.value = _uiState.value.copy(
+                            searchResultAirDataList = emptyList(),
+                            searchingKeyword = query
+                        )
+                    } else {
+                        // send search result uiState
+                        _uiState.value = _uiState.value.copy(
+                            searchResultAirDataList = airDataRepository.queryAirData(query),
+                            searchingKeyword = query
+                        )
+                    }
                 }
         }
     }
