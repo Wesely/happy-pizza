@@ -108,12 +108,19 @@ class MainActivity : AppCompatActivity() {
 
         // Associate searchable configuration with the SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView = (menu.findItem(R.id.menu_item_search).actionView as SearchView).apply {
+        val menuItem = menu.findItem(R.id.menu_item_search)
+        searchView = (menuItem.actionView as SearchView).apply {
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
             queryHint = getString(R.string.search_hint)
             isIconified = true
             isIconifiedByDefault = false
             onActionViewExpanded()
+
+            // inside onCreateOptionsMenu, if viewModel is dirty, it means it's restoring.
+            if (viewModel.uiState.value.isSearching) {
+                menuItem.expandActionView()
+                setQuery(viewModel.uiState.value.searchingKeyword, false)
+            }
 
 
             val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
