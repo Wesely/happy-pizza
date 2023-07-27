@@ -57,6 +57,7 @@
             android:background="@color/white"
             android:text="@string/search_hint"
             android:gravity="center"
+            android:padding="@dimen/margin_l"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:visibility="gone" />
 
