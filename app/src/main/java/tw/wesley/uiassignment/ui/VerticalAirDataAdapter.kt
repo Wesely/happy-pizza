@@ -11,7 +11,7 @@ import tw.wesley.uiassignment.data.local.AirData.Companion.INVALID_INT
 import tw.wesley.uiassignment.databinding.ItemVerticalAirDataBinding
 
 class VerticalAirDataAdapter(
-    private val airDataList: List<AirData>,
+    private var airDataList: List<AirData>,
     private val onBadStatusClickedCallback: ((AirData) -> Unit),
 ) : RecyclerView.Adapter<VerticalAirDataAdapter.VerticalAirDataViewHolder>() {
 
@@ -55,6 +55,10 @@ class VerticalAirDataAdapter(
     override fun getItemCount(): Int {
         Timber.d("getItemCount/airDataList.size=${airDataList.size}")
         return airDataList.size
+    }
+
+    fun updateData(newData: List<AirData>) {
+        airDataList = newData
     }
 
     class VerticalAirDataViewHolder(val binding: ItemVerticalAirDataBinding) : RecyclerView.ViewHolder(binding.root)

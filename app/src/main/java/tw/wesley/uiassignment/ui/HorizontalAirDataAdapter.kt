@@ -7,7 +7,9 @@ import timber.log.Timber
 import tw.wesley.uiassignment.data.local.AirData
 import tw.wesley.uiassignment.databinding.ItemHorizontalAirDataBinding
 
-class HorizontalAirDataAdapter(private val airDataList: List<AirData>) : RecyclerView.Adapter<HorizontalAirDataAdapter.HorizontalAirDataViewHolder>() {
+class HorizontalAirDataAdapter(
+    private var airDataList: List<AirData>
+) : RecyclerView.Adapter<HorizontalAirDataAdapter.HorizontalAirDataViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HorizontalAirDataViewHolder {
         val binding = ItemHorizontalAirDataBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,6 +30,10 @@ class HorizontalAirDataAdapter(private val airDataList: List<AirData>) : Recycle
     override fun getItemCount(): Int {
         Timber.d("getItemCount/airDataList.size=${airDataList.size}")
         return airDataList.size
+    }
+
+    fun updateData(newData: List<AirData>) {
+        airDataList = newData
     }
 
     class HorizontalAirDataViewHolder(val binding: ItemHorizontalAirDataBinding) : RecyclerView.ViewHolder(binding.root)

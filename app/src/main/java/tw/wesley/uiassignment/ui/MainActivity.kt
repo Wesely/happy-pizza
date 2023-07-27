@@ -1,5 +1,6 @@
 package tw.wesley.uiassignment.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.SearchManager
 import android.content.Context
@@ -15,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import tw.wesley.uiassignment.R
@@ -29,12 +31,31 @@ class MainActivity : AppCompatActivity() {
 
     // Use this delegate to auto create/destroy on correct lifecycle
     private val viewModel: AirQualityViewModel by viewModels()
+
+    @SuppressLint("NotifyDataSetChanged") // it's fully changed so we have to use this. Considering to use paging schema to ease the effort
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater).apply {
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        // 初始化 RecyclerView 和 Adapters
+        val horizontalAdapter = HorizontalAirDataAdapter(emptyList())
+        val verticalAdapter = VerticalAirDataAdapter(emptyList()) { data ->
+            // Example: 沙鹿的空氣不良好
+            Toast.makeText(baseContext, getString(R.string.home_item_toast, data.siteName), Toast.LENGTH_SHORT).show()
+        }
+
+        with(binding) {
             setSupportActionBar(toolbar)
             setContentView(root)
+
+            horizontalRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = horizontalAdapter
+            }
+            verticalRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                adapter = verticalAdapter
+            }
         }
 
         supportActionBar?.setDisplayShowTitleEnabled(true)
@@ -45,35 +66,35 @@ class MainActivity : AppCompatActivity() {
             viewModel.fetchAirData()
         }
 
-        viewModel.verticalAirLiveData.observe(this) { data ->
-            // only print on debug build
-            Timber.d("collect/vertical/dataSize=${data.size}")
-            binding.verticalRecyclerView.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                adapter = VerticalAirDataAdapter(data) {
-                    // Example: 沙鹿的空氣不良好
-                    Toast.makeText(context, getString(R.string.home_item_toast, it.siteName), Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            viewModel.uiState.collectLatest { uiState ->
+                if (uiState.isSearching) {
+                    // 搜尋功能啟用中
+                    binding.verticalRecyclerView.isVisible = false
+                    if (uiState.searchingKeyword.isBlank()) {
+                        // 還沒輸入任何字: 蓋掉主畫面顯示提示
+                        binding.centerSearchHint.isVisible = true
+                        verticalAdapter.updateData(emptyList())
+                    } else {
+                        // 有輸入文字
+                        // 找不到的時候，顯示蓋板提示。反之則隱藏蓋板提示
+                        binding.centerSearchHint.isVisible = uiState.searchResultAirDataList.isEmpty()
+                        verticalAdapter.updateData(uiState.searchResultAirDataList)
+                    }
+                    verticalAdapter.notifyDataSetChanged()
+                } else {
+                    // 瀏覽功能啟用中 (非搜尋中)
+                    binding.verticalRecyclerView.isVisible = true
+                    binding.centerSearchHint.isVisible = false
+                    verticalAdapter.updateData(uiState.verticalAirDataList)
+                    horizontalAdapter.updateData(uiState.horizontalAirDataList)
+                    verticalAdapter.notifyDataSetChanged()
+                    horizontalAdapter.notifyDataSetChanged()
                 }
-            }
-
-        }
-
-        viewModel.horizontalAirLiveData.observe(this) { data ->
-            // only print on debug build
-            Timber.d("collect/horizontal/dataSize=${data.size}")
-            binding.horizontalRecyclerView.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                adapter = HorizontalAirDataAdapter(data)
+                Timber.d("collect/searchresult/${uiState.searchResultAirDataList.map { it.siteName }}")
             }
         }
 
-        viewModel.isSearching.observe(this) { isSearching ->
-            binding.centerSearchHint.isVisible = isSearching
-        }
-
-        viewModel.searchResultLiveData.observe(this) {
-            Timber.d("collect/searchresult/${it.map { it.siteName }}")
-        }
     }
 
     // https://developer.android.com/develop/ui/views/search/training/setup

@@ -1,10 +1,10 @@
 package tw.wesley.uiassignment.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,19 +20,20 @@ class AirQualityViewModel @Inject constructor(
     private val airDataRepository: AirDataRepository
 ) : ViewModel() {
 
+    /**
+     * Use a UiState to manage the behave of several data with the Searching mode.
+     * On each update, we can copy this UiState and only modify the part we want.
+     */
+    data class UiState(
+        var isSearching: Boolean = false,
+        var searchingKeyword: String = "",
+        var horizontalAirDataList: List<AirData> = emptyList(),
+        var verticalAirDataList: List<AirData> = emptyList(),
+        var searchResultAirDataList: List<AirData> = emptyList(),
+    )
 
-    // MutableLiveData is a LiveData whose value can be changed.
-    // _horizontalAirLiveData is private so the UI cannot change its value.
-    private val _horizontalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
-    val horizontalAirLiveData: LiveData<List<AirData>> = _horizontalAirLiveData
-
-    private val _verticalAirLiveData = MutableLiveData<List<AirData>>(emptyList())
-    val verticalAirLiveData: LiveData<List<AirData>> = _verticalAirLiveData
-
-    val isSearching = MutableLiveData(false)
-
-    private val _searchResultLiveData = MutableLiveData<List<AirData>>(emptyList())
-    val searchResultLiveData: LiveData<List<AirData>> = _searchResultLiveData
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState
 
     private var qualityThreshold = 30
 
@@ -51,11 +52,15 @@ class AirQualityViewModel @Inject constructor(
                     // Determine which air data goes to which LiveData based on PM2.5 value
                     if (qualityThreshold == 0) {
                         // If all PM2.5 values are 0, the first few items go to horizontalAirLiveData, the rest to verticalAirLiveData
-                        _horizontalAirLiveData.value = take(MIN_HORIZONTAL_ITEMS)
-                        _verticalAirLiveData.value = drop(MIN_HORIZONTAL_ITEMS)
+                        _uiState.value = _uiState.value.copy(
+                            horizontalAirDataList = take(MIN_HORIZONTAL_ITEMS),
+                            verticalAirDataList = drop(MIN_HORIZONTAL_ITEMS)
+                        )
                     } else {
-                        _horizontalAirLiveData.value = filter { it.pm25 <= qualityThreshold }
-                        _verticalAirLiveData.value = filter { it.pm25 > qualityThreshold }
+                        _uiState.value = _uiState.value.copy(
+                            horizontalAirDataList = filter { it.pm25 <= qualityThreshold },
+                            verticalAirDataList = filter { it.pm25 > qualityThreshold }
+                        )
                     }
                 }
             }
@@ -78,7 +83,7 @@ class AirQualityViewModel @Inject constructor(
      * Set the isSearching mode
      */
     fun activateSearching(activate: Boolean) {
-        isSearching.value = activate
+        _uiState.value = _uiState.value.copy(isSearching = activate)
     }
 
     fun queryAirData(keyword: String?) {
@@ -86,10 +91,11 @@ class AirQualityViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
-            _searchResultLiveData.value = airDataRepository.queryAirData(keyword)
+            _uiState.value = _uiState.value.copy(
+                searchResultAirDataList = airDataRepository.queryAirData(keyword)
+            )
         }
     }
-
 
     companion object {
         // A constant that represents the minimum number of items we want to display in the horizontal recycler view
