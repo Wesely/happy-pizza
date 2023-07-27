@@ -3,6 +3,15 @@
 
 設定中的 Gradle 需把 Java 版本設為 17
 
+## Brief
+- Use `Retrofit` to fetch the JSON data
+- Use `Moshi` to convert to our dataObject(Remote)
+- Map dataObject(Remote) to local format (convert PM2.5 to integer)
+- Store the datas in `Room` Database
+- Query data as a `flow`
+- wrap all data, status in a `UiState` class
+
+
 ## Download Debug(Unsigned) APK
 <img width="191" alt="image" src="https://github.com/Wesely/happy-pizza/assets/5109822/7d13eb0a-416d-4620-91d7-4fdc716bdd5d">
 
