@@ -87,12 +87,13 @@ class AirQualityViewModel @Inject constructor(
     }
 
     fun queryAirData(keyword: String?) {
-        if (keyword.isNullOrBlank()) {
+        if (keyword == null) {
             return
         }
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
-                searchResultAirDataList = airDataRepository.queryAirData(keyword)
+                searchResultAirDataList = airDataRepository.queryAirData(keyword),
+                searchingKeyword = keyword
             )
         }
     }

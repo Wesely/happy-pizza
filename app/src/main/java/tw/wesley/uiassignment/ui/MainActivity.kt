@@ -67,24 +67,29 @@ class MainActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            // collectLatest() would cancel previous task when a new task has come
             viewModel.uiState.collectLatest { uiState ->
                 if (uiState.isSearching) {
                     // 搜尋功能啟用中
-                    binding.verticalRecyclerView.isVisible = false
+                    binding.horizontalRecyclerView.isVisible = false
                     if (uiState.searchingKeyword.isBlank()) {
                         // 還沒輸入任何字: 蓋掉主畫面顯示提示
+                        Timber.d("還沒輸入任何字")
                         binding.centerSearchHint.isVisible = true
+                        binding.centerSearchHint.setText(R.string.search_hint)
                         verticalAdapter.updateData(emptyList())
                     } else {
                         // 有輸入文字
                         // 找不到的時候，顯示蓋板提示。反之則隱藏蓋板提示
+                        Timber.d("有輸入文字")
                         binding.centerSearchHint.isVisible = uiState.searchResultAirDataList.isEmpty()
+                        binding.centerSearchHint.text = getString(R.string.search_not_found, uiState.searchingKeyword)
                         verticalAdapter.updateData(uiState.searchResultAirDataList)
                     }
                     verticalAdapter.notifyDataSetChanged()
                 } else {
                     // 瀏覽功能啟用中 (非搜尋中)
-                    binding.verticalRecyclerView.isVisible = true
+                    binding.horizontalRecyclerView.isVisible = true
                     binding.centerSearchHint.isVisible = false
                     verticalAdapter.updateData(uiState.verticalAirDataList)
                     horizontalAdapter.updateData(uiState.horizontalAirDataList)
@@ -115,6 +120,7 @@ class MainActivity : AppCompatActivity() {
             // Show/Hide softKeyboard based on the focus state.
             setOnQueryTextFocusChangeListener { v, hasFocus ->
                 Timber.d("setOnQueryTextFocusChangeListener/$hasFocus")
+                viewModel.activateSearching(hasFocus)
                 if (hasFocus) {
                     // flag = InputMethodManager.IMPLICIT won't work
                     inputMethodManager.showSoftInput(v, 0)
