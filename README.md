@@ -1,4 +1,13 @@
+## Setup
+<img width="1089" alt="image" src="https://github.com/Wesely/happy-pizza/assets/5109822/8b1dfba8-6d03-467b-894f-6ce69498e958">
+
+設定中的 Gradle 需把 Java 版本設為 17
+
+
+
+## Extra Logic
 <img width="302" alt="image" src="https://github.com/Wesely/happy-pizza/assets/5109822/0af78992-2af8-449b-8035-61b4ac3064fe">
+
 Sometimes the returned `PM2.5` is not an Integer, we make it nullable and display "Unknown".
 
 - 若 pm2.5 欄位為空，顯示為 "無資料"
